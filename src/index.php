@@ -53,6 +53,10 @@ try {
                 <?php echo htmlspecialchars($post['prix']); ?> €
             </div>
             <a href="edit_billet.php?id=<?php echo $post['id']; ?>" class="btn btn-secondary">Modifier</a>
+            <form action="scripts/delete_billet.php" method="post" style="display:inline;">
+                <input type="hidden" name="id" value="<?php echo $post['id']; ?>">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce billet ?');">Supprimer</button>
+            </form>
         </div>
     <?php endforeach; ?>
 <?php else: ?>

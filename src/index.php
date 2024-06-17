@@ -25,10 +25,16 @@ try {
     // Filtrage par catégorie
     $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
 
+    // Filtrage par groupe
+    $selectedGroup = isset($_GET['groupe']) ? $_GET['groupe'] : '';
+
     // Construction de la requête SQL avec les filtres
     $sql = "SELECT * FROM post WHERE prix BETWEEN :min_price AND :max_price";
     if (!empty($selectedCategory)) {
         $sql .= " AND categorie = :category";
+    }
+    if (!empty($selectedGroup)) {
+        $sql .= " AND groupe = :groupe";
     }
     $sql .= " ORDER BY prix $order";
 
@@ -38,11 +44,17 @@ try {
     if (!empty($selectedCategory)) {
         $request->bindParam(':category', $selectedCategory, PDO::PARAM_STR);
     }
+    if (!empty($selectedGroup)) {
+        $request->bindParam(':groupe', $selectedGroup, PDO::PARAM_STR);
+    }
     $request->execute();
     $posts = $request->fetchAll(PDO::FETCH_ASSOC);
 
     // Obtenir les catégories uniques
     $categories = $db_connect->query("SELECT DISTINCT categorie FROM post")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Obtenir les groupes uniques
+    $groups = $db_connect->query("SELECT DISTINCT groupe FROM post")->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo 'Erreur de connexion : ' . $e->getMessage();
     exit;
@@ -70,6 +82,16 @@ try {
         <?php foreach ($categories as $category): ?>
             <option value="<?php echo htmlspecialchars($category['categorie']); ?>" <?php if ($selectedCategory == $category['categorie']) echo 'selected'; ?>>
                 <?php echo htmlspecialchars($category['categorie']); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <label for="groupe">Groupe :</label>
+    <select id="groupe" name="groupe">
+        <option value="">Tous les groupes</option>
+        <?php foreach ($groups as $group): ?>
+            <option value="<?php echo htmlspecialchars($group['groupe']); ?>" <?php if ($selectedGroup == $group['groupe']) echo 'selected'; ?>>
+                <?php echo htmlspecialchars($group['groupe']); ?>
             </option>
         <?php endforeach; ?>
     </select>

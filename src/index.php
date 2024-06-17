@@ -13,8 +13,20 @@ try {
         $order = 'DESC';
     }
 
-    // Récupération des posts avec tri par prix
-    $request = $db_connect->query("SELECT * FROM post ORDER BY prix $order");
+    // Obtenir les valeurs min et max du prix des billets actuels
+    $priceRange = $db_connect->query("SELECT MIN(prix) as min_price, MAX(prix) as max_price FROM post")->fetch(PDO::FETCH_ASSOC);
+    $minPrice = $priceRange['min_price'];
+    $maxPrice = $priceRange['max_price'];
+
+    // Filtrage par fourchette de prix
+    $minSelectedPrice = isset($_GET['min_price']) ? $_GET['min_price'] : $minPrice;
+    $maxSelectedPrice = isset($_GET['max_price']) ? $_GET['max_price'] : $maxPrice;
+
+    // Récupération des posts avec tri par prix et filtrage par fourchette de prix
+    $request = $db_connect->prepare("SELECT * FROM post WHERE prix BETWEEN :min_price AND :max_price ORDER BY prix $order");
+    $request->bindParam(':min_price', $minSelectedPrice, PDO::PARAM_INT);
+    $request->bindParam(':max_price', $maxSelectedPrice, PDO::PARAM_INT);
+    $request->execute();
     $posts = $request->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo 'Erreur de connexion : ' . $e->getMessage();
@@ -31,6 +43,13 @@ try {
         <option value="ASC" <?php if ($order == 'ASC') echo 'selected'; ?>>Croissant</option>
         <option value="DESC" <?php if ($order == 'DESC') echo 'selected'; ?>>Décroissant</option>
     </select>
+
+    <label for="min_price">Prix minimum :</label>
+    <input type="number" id="min_price" name="min_price" value="<?php echo htmlspecialchars($minSelectedPrice); ?>" min="<?php echo htmlspecialchars($minPrice); ?>" max="<?php echo htmlspecialchars($maxPrice); ?>">
+
+    <label for="max_price">Prix maximum :</label>
+    <input type="number" id="max_price" name="max_price" value="<?php echo htmlspecialchars($maxSelectedPrice); ?>" min="<?php echo htmlspecialchars($minPrice); ?>" max="<?php echo htmlspecialchars($maxPrice); ?>">
+
     <button type="submit">Appliquer</button>
 </form>
 

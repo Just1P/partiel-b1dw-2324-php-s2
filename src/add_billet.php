@@ -36,6 +36,5 @@ require_once 'parts/header.php';
 </form>
 
 <?php
-// Inclusion du footer
 require_once 'parts/footer.php';
 ?>

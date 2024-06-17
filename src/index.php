@@ -22,12 +22,27 @@ try {
     $minSelectedPrice = isset($_GET['min_price']) ? $_GET['min_price'] : $minPrice;
     $maxSelectedPrice = isset($_GET['max_price']) ? $_GET['max_price'] : $maxPrice;
 
-    // Récupération des posts avec tri par prix et filtrage par fourchette de prix
-    $request = $db_connect->prepare("SELECT * FROM post WHERE prix BETWEEN :min_price AND :max_price ORDER BY prix $order");
+    // Filtrage par catégorie
+    $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
+
+    // Construction de la requête SQL avec les filtres
+    $sql = "SELECT * FROM post WHERE prix BETWEEN :min_price AND :max_price";
+    if (!empty($selectedCategory)) {
+        $sql .= " AND categorie = :category";
+    }
+    $sql .= " ORDER BY prix $order";
+
+    $request = $db_connect->prepare($sql);
     $request->bindParam(':min_price', $minSelectedPrice, PDO::PARAM_INT);
     $request->bindParam(':max_price', $maxSelectedPrice, PDO::PARAM_INT);
+    if (!empty($selectedCategory)) {
+        $request->bindParam(':category', $selectedCategory, PDO::PARAM_STR);
+    }
     $request->execute();
     $posts = $request->fetchAll(PDO::FETCH_ASSOC);
+
+    // Obtenir les catégories uniques
+    $categories = $db_connect->query("SELECT DISTINCT categorie FROM post")->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo 'Erreur de connexion : ' . $e->getMessage();
     exit;
@@ -36,7 +51,6 @@ try {
 
 <h1>Liste des Posts</h1>
 
-<!-- Formulaire de filtre -->
 <form method="get" action="index.php">
     <label for="order">Trier par prix :</label>
     <select id="order" name="order">
@@ -49,6 +63,16 @@ try {
 
     <label for="max_price">Prix maximum :</label>
     <input type="number" id="max_price" name="max_price" value="<?php echo htmlspecialchars($maxSelectedPrice); ?>" min="<?php echo htmlspecialchars($minPrice); ?>" max="<?php echo htmlspecialchars($maxPrice); ?>">
+
+    <label for="category">Catégorie :</label>
+    <select id="category" name="category">
+        <option value="">Toutes les catégories</option>
+        <?php foreach ($categories as $category): ?>
+            <option value="<?php echo htmlspecialchars($category['categorie']); ?>" <?php if ($selectedCategory == $category['categorie']) echo 'selected'; ?>>
+                <?php echo htmlspecialchars($category['categorie']); ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
 
     <button type="submit">Appliquer</button>
 </form>
@@ -83,6 +107,5 @@ try {
 <?php endif; ?>
 
 <?php
-// Inclusion du footer
 require_once 'parts/footer.php';
 ?>

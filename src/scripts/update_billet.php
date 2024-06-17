@@ -11,7 +11,6 @@ try {
         // Préparation de la requête de mise à jour
         $request = $db_connect->prepare("UPDATE post SET categorie = :categorie, groupe = :groupe, equipe1 = :equipe1, equipe2 = :equipe2, date_heure = :date_heure, lieu = :lieu, prix = :prix, description = :description WHERE id = :id");
 
-        // Liaison des paramètres
         $request->bindParam(':id', $id, PDO::PARAM_INT);
         $request->bindParam(':categorie', $_POST['categorie']);
         $request->bindParam(':groupe', $_POST['groupe']);
@@ -22,10 +21,8 @@ try {
         $request->bindParam(':prix', $_POST['prix']);
         $request->bindParam(':description', $_POST['description']);
 
-        // Exécution de la requête
         $request->execute();
 
-        // Redirection vers la page principale
         header("Location: ../index.php");
     } else {
         echo 'ID de billet manquant';

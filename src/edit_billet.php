@@ -7,7 +7,6 @@ try {
     $db_connect = new PDO("mysql:host=db;dbname=wordpress", "root", "admin");
     $db_connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Récupération des informations du billet à modifier
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $request = $db_connect->prepare("SELECT * FROM post WHERE id = :id");
@@ -63,6 +62,5 @@ try {
 </form>
 
 <?php
-// Inclusion du footer
 require_once 'parts/footer.php';
 ?>

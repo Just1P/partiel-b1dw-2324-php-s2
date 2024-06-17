@@ -28,6 +28,10 @@ try {
     // Filtrage par groupe
     $selectedGroup = isset($_GET['groupe']) ? $_GET['groupe'] : '';
 
+    // Filtrage par lieu
+$selectedLocation = isset($_GET['lieu']) ? $_GET['lieu'] : '';
+
+
     // Construction de la requête SQL avec les filtres
     $sql = "SELECT * FROM post WHERE prix BETWEEN :min_price AND :max_price";
     if (!empty($selectedCategory)) {
@@ -36,6 +40,10 @@ try {
     if (!empty($selectedGroup)) {
         $sql .= " AND groupe = :groupe";
     }
+    if (!empty($selectedLocation)) {
+        $sql .= " AND lieu = :lieu";
+    }
+    
     $sql .= " ORDER BY prix $order";
 
     $request = $db_connect->prepare($sql);
@@ -47,6 +55,10 @@ try {
     if (!empty($selectedGroup)) {
         $request->bindParam(':groupe', $selectedGroup, PDO::PARAM_STR);
     }
+    if (!empty($selectedLocation)) {
+        $request->bindParam(':lieu', $selectedLocation, PDO::PARAM_STR);
+    }
+    
     $request->execute();
     $posts = $request->fetchAll(PDO::FETCH_ASSOC);
 
@@ -59,6 +71,10 @@ try {
     echo 'Erreur de connexion : ' . $e->getMessage();
     exit;
 }
+
+    // Obtenir les lieux uniques
+    $locations = $db_connect->query("SELECT DISTINCT lieu FROM post")->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <h1>Liste des Posts</h1>
@@ -95,6 +111,17 @@ try {
             </option>
         <?php endforeach; ?>
     </select>
+
+    <label for="lieu">Lieu :</label>
+<select id="lieu" name="lieu">
+    <option value="">Tous les lieux</option>
+    <?php foreach ($locations as $location): ?>
+        <option value="<?php echo htmlspecialchars($location['lieu']); ?>" <?php if ($selectedLocation == $location['lieu']) echo 'selected'; ?>>
+            <?php echo htmlspecialchars($location['lieu']); ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+
 
     <button type="submit">Appliquer</button>
 </form>

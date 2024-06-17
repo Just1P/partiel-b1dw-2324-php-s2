@@ -1,6 +1,4 @@
-
 # PARTIEL B1DW PHP - 2324_S2
-
 
 ![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
@@ -25,10 +23,13 @@ Before you begin, ensure you have met the following requirements:
 ```
 
 ## Commit message convention
+
 - [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## Authors
+
 - [Thomas Mouchelet](https://github.com/ThomasMouchelet)
+- [Justin Pitra](https://github.com/Just1P/partiel-b1dw-2324-php-s2)
 
 ## License
 

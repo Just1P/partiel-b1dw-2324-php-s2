@@ -124,6 +124,7 @@ $selectedLocation = isset($_GET['lieu']) ? $_GET['lieu'] : '';
 
 
     <button type="submit">Appliquer</button>
+    <button type="button" onclick="window.location.href='index.php';">Réinitialiser</button>
 </form>
 
 <a href="add_billet.php" class="btn btn-primary">Ajouter un nouveau billet</a>
